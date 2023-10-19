@@ -93,7 +93,7 @@ public class DyeEntity extends ThrownItemEntity {
         } else {
             // Fallback to config to handle possible edge-cases.
             newId = ThrowableDye.CONFIG.getOutliers().get(id.toString());
-            if (newId == null) {
+            if (newId == null || !newId.contains(blockId)) {
                 return;
             }
             newId = newId.replace("{color}", this.getColor().getName());
