@@ -27,12 +27,10 @@
 	"depends": {
 		"fabricloader": ">=0.14.23",
 		"minecraft": [
-			"1.19",
-			"1.19.1",
-			"1.19.2"
+			"1.19.3"
 		],
 		"java": ">=17",
-		"fabric": ">=0.58.0+1.19"
+		"fabric": ">=0.76.1+1.19.3"
 	},
 	"suggests": {
 		"another-mod": "*"

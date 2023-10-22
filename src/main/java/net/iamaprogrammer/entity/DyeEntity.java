@@ -1,15 +1,13 @@
 package net.iamaprogrammer.entity;
 
 import net.iamaprogrammer.ThrowableDye;
-import net.minecraft.block.*;
-import net.minecraft.block.enums.BedPart;
-import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.block.BedBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.BlazeEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.DyeItem;
@@ -19,6 +17,7 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -27,7 +26,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class DyeEntity extends ThrownItemEntity {
@@ -68,8 +66,10 @@ public class DyeEntity extends ThrownItemEntity {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
 
-        if (entity instanceof SheepEntity sheep) {
+        if (entity instanceof SheepEntity sheep && sheep.getColor() != this.getColor()) {
             sheep.setColor(this.getColor());
+        } else {
+            this.dropStack(this.getItem());
         }
     }
 
@@ -80,13 +80,18 @@ public class DyeEntity extends ThrownItemEntity {
         BlockState state = this.world.getBlockState(pos);
         
         // Get block id and namespace
-        Identifier id = Registry.BLOCK.getId(state.getBlock());
+        Identifier id = Registries.BLOCK.getId(state.getBlock());
         String blockId = id.getPath();
         String blockNamespace = id.getNamespace();
         
         // Generate a new id.
         String newId = generateId(blockId);
-        Block newBlock = Registry.BLOCK.get(new Identifier(blockNamespace, newId));
+        if (new Identifier(blockNamespace, newId).equals(id)) {
+            this.dropStack(this.getItem());
+            return;
+        }
+
+        Block newBlock = Registries.BLOCK.get(new Identifier(blockNamespace, newId));
 
         if (newBlock != Blocks.AIR) {
             this.addToWorld(pos, newBlock, state);
@@ -94,12 +99,14 @@ public class DyeEntity extends ThrownItemEntity {
             // Fallback to config to handle possible edge-cases.
             newId = ThrowableDye.CONFIG.getOutliers().get(id.toString());
             if (newId == null || !newId.contains(blockId)) {
+                this.dropStack(this.getItem());
                 return;
             }
             newId = newId.replace("{color}", this.getColor().getName());
-            newBlock = Registry.BLOCK.get(new Identifier(blockNamespace, newId));
+            newBlock = Registries.BLOCK.get(new Identifier(blockNamespace, newId));
 
             if (newBlock == Blocks.AIR) {
+                this.dropStack(this.getItem());
                 return;
             }
             this.addToWorld(pos, newBlock, state);
