@@ -10,8 +10,9 @@ import net.iamaprogrammer.event.UseItemHandler;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class ThrowableDye implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("throwabledye");
 
 	public static CoreConfig CONFIG;
-	public static final EntityType<DyeEntity> DYE = Registry.register(Registry.ENTITY_TYPE, new Identifier(ThrowableDye.MOD_ID, "packed_snowball"), FabricEntityTypeBuilder.<DyeEntity>create(SpawnGroup.MISC, DyeEntity::new).dimensions(EntityDimensions.fixed(0.25F, 0.25F)).trackRangeChunks(4).trackedUpdateRate(10).build());
+	public static final EntityType<DyeEntity> DYE = Registry.register(Registries.ENTITY_TYPE, new Identifier(ThrowableDye.MOD_ID, "packed_snowball"), FabricEntityTypeBuilder.<DyeEntity>create(SpawnGroup.MISC, DyeEntity::new).dimensions(EntityDimensions.fixed(0.25F, 0.25F)).trackRangeChunks(4).trackedUpdateRate(10).build());
 
 
 	@Override
