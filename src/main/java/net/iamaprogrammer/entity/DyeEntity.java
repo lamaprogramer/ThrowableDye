@@ -29,7 +29,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class DyeEntity extends ThrownItemEntity {
-
+    private final World world = this.getWorld();
     public DyeEntity(EntityType<? extends ThrownItemEntity> entityEntityType, World world) {
         super(entityEntityType, world);
     }
